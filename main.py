@@ -1,9 +1,16 @@
 def main():
-  background = background_maker(128)
-  triset = [[[50, 85], [50, 50], [85, 50]], [[50, 85], [85, 50], [85,85]], [[50, 50], [73, 45], [85, 50]], [[85, 50], [108, 45], [73, 45]], [[85, 50], [108, 80], [108, 45]], [[85, 85], [108, 80], [85, 50]]]
-  drawtris(background, triset)
-  imgPrint(background)
-
+  totalframes, frames = 10, []
+  for a in range(totalframes):
+    background, triset = background_maker(55),[[[25, 42], [25, 25], [42, 25]], [[25, 42], [42, 25], [42,42]], [[25, 25], [36, 22], [42, 25]], [[42, 25], [54, 22], [36, 22]], [[42, 25], [54, 40], [54, 22]], [[42, 42], [54, 40], [42, 25]]]
+    for b in range(len(background)):
+      for c in range(len(background[0])): setpix(background, c, b, [abs((b-c)*a) + ((a+b+c)%2)*4, abs((c-b)*a)+((a+b+c)%3)*4, abs((b-c+a))+((a+b+c)%5)*4])
+    setline(background, 11, 17, 25, 21, [255, 0, 0])
+    drawtri(background, 26, 22, 25, 15, 18, 23)
+    drawtris(background, triset)
+    background = combine(background, upscale(textgen("Cube!", [255, 0, 255], 140, 20, [255, 255, 255]), 1), 5, 5)
+    frames.append(imgPrint(background, True))
+    print(str(a+1) + "/" + str(totalframes) + " Frames Rendered")
+  videoPrint(frames)
 def drawtris(list, set, color=[255,255,255,255], gen=False, bgcolor=[0,0,0,0]):
   if gen:
     list = []
@@ -15,12 +22,6 @@ def drawtris(list, set, color=[255,255,255,255], gen=False, bgcolor=[0,0,0,0]):
     return list
   else: 
     for a in set: drawtri(list, a[0][0], a[0][1], a[1][0], a[1][1], a[2][0], a[2][1])
-def Multiplymatrix(i, o, m):
-  o[0] = i[0] * m[0][0] + i[1] * m[1][0] + i[2] * m[2][0] + m[3][0]
-  o[1] = i[0] * m[0][1] + i[1] * m[1][1] + i[2] * m[2][1] + m[3][1]
-  o[2] = i[0] * m[0][2] + i[1] * m[1][2] + i[2] * m[2][2] + m[3][2]
-  w = i[0] * m[0][3] + i[1] * m[1][3] + i[2] * m[2][3] + m[3][3]
-  if w != 0: o = [x/w for x in o]
 def background_maker(x, y='default', color=[0,0,0,0]):
   out = []
   if y == 'default': y = x
@@ -64,7 +65,7 @@ def setline(list,x,y,x2,y2,color=[255,255,255,255],p='default',gen=False):
 def floor(x):
   if x < round(x): return (round(x)-1)
   return round(x)
-def upscale(pixelsarray, scale, limx, limy):
+def upscale(pixelsarray, scale):
   out = []
   for a in range(len(pixelsarray)*scale):
     out.append([])
